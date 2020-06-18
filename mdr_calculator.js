@@ -4,16 +4,21 @@ const Calculator = {
     let delimiters = [];
     let delimiter;
 
+    // find the index one past the last delimiter char
     for (let index = 0; index < input.length; index += 1) {
       if (input[index] === '\n') {
         firstNewLineIndex = index;
       }
     }
 
+    // capture all delimiters chars
     const joinedDelimiters = input.substring(2, firstNewLineIndex);
+
     let prevDelimitEndIndex = -1;
 
+    // parse joined delimiters and push each to delimiters container
     for (let index = 0; index < joinedDelimiters.length; index += 1) {
+      // stop when at end of current delimiter or end of delimiters string
       if (index === joinedDelimiters.length - 1 ||
         joinedDelimiters[index] !== joinedDelimiters[index + 1]) {
 
@@ -51,11 +56,13 @@ const Calculator = {
     for (let index = 0; index < input.length; index += 1) {
       character = input[index];
 
+      // capture first index of delimiter
       if (character.match(/[^0-9\-\n]/) && delimiterStartIndex === undefined) {
         delimiterStartIndex = index;
         continue;
       }
 
+      // capture digits between delimiters && validate most recent delimiter
       if (character.match(/[0-9\-\n]/) && delimiterStartIndex >= 0) {
         segment = input.substring(delimiterEndIndex, delimiterStartIndex);
         delimiter = input.substring(delimiterStartIndex, index);
@@ -66,6 +73,7 @@ const Calculator = {
       }
     }
 
+    // capture last segment of digits if string ends on a digit char
     if (input[delimiterEndIndex].match(/[0-9\-\n]/) &&
       delimiterStartIndex > delimiterEndIndex) {
       segment = input.substring(delimiterEndIndex, delimiterStartIndex);
@@ -82,8 +90,10 @@ const Calculator = {
 
   coerceSegmentsToNumbers(characters) {
     return (characters.map(stringSection => {
+      // remove leading or trailing whitespace
       let trimmedSection = stringSection.trim();
 
+      // empty strings and numbers > 2000 return 0
       if (trimmedSection === '') {
         return 0;
       } else {
@@ -122,6 +132,7 @@ const Calculator = {
     let delimiters;
     let trimmedInput = input;
 
+    // capture custom delimiter(s) or default delimiter
     if (input.substring(0, 2) === "//") {
       delimiters = this.parseDelimiters(trimmedInput);
       trimmedInput = this.ommitControl(trimmedInput);
@@ -129,14 +140,17 @@ const Calculator = {
       delimiters = [","]
     }
 
+    // remove leading or trailing whitespace
     trimmedInput = trimmedInput.trim();
 
     if (trimmedInput.length === 0) {
       return 0;
     }
 
+    // construct list of string representation of numbers
     const inputSegments = this.splitSegments(trimmedInput, delimiters);
 
+    // coerse strings to numbers
     const numbers =
       this.coerceSegmentsToNumbers(inputSegments);
 
